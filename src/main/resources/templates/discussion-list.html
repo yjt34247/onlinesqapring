@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>讨论列表 - 在线问答平台</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>在线问答平台</h1>
+        <div class="user-info">
+            <span>欢迎, <strong th:text="${session.user.username}">用户</strong></span>
+            <a th:href="@{/discussions/create}">创建话题</a>
+            <a th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+
+    <div class="page-title">
+        <h2>所有讨论话题</h2>
+    </div>
+
+    <!-- 话题列表 -->
+    <div th:if="${threads != null and !threads.isEmpty()}" class="thread-list">
+        <div th:each="thread : ${threads}" class="thread-card">
+            <a th:href="@{/discussions/{id}(id=${thread.id})}"
+               class="thread-title" th:text="${thread.title}">
+                话题标题
+            </a>
+
+            <div class="thread-meta">
+                    <span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        [[${thread.author}]]
+                    </span>
+                <span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <span th:text="${#dates.format(thread.createTime, 'yyyy-MM-dd HH:mm')}">
+                            时间
+                        </span>
+                    </span>
+            </div>
+
+            <div class="thread-preview"
+                 th:if="${thread.content != null}"
+                 th:text="${#strings.length(thread.content) > 200 ? #strings.substring(thread.content, 0, 200) + '...' : thread.content}">
+                话题内容预览...
+            </div>
+
+            <div class="thread-stats">
+                    <span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        回复: [[${thread.replies != null ? thread.replies.size() : 0}]]
+                    </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 空状态 -->
+    <div th:if="${threads == null or threads.isEmpty()}" class="empty-state">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <h3>暂无讨论话题</h3>
+        <p>还没有人创建话题，快来创建第一个话题吧！</p>
+        <a th:href="@{/discussions/create}" class="btn" style="width: auto; display: inline-block; margin-top: 20px;">
+            创建第一个话题
+        </a>
+    </div>
+</div>
+</body>
+</html>

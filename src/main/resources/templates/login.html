@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 在线问答平台</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .auth-container {
+            display: flex;
+            gap: 40px;
+            max-width: 1000px;
+            margin: 50px auto;
+        }
+
+        .auth-box {
+            flex: 1;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .auth-box h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .form-actions .btn {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>在线问答平台</h1>
+    </div>
+
+    <!-- 消息提示 -->
+    <div th:if="${error}" class="alert alert-error">
+        [[${error}]]
+    </div>
+    <div th:if="${message}" class="alert alert-success">
+        [[${message}]]
+    </div>
+
+    <div class="auth-container">
+        <!-- 登录表单 -->
+        <div class="auth-box">
+            <h2>登录账户</h2>
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label for="login-username">用户名</label>
+                    <input type="text" id="login-username" name="username"
+                           class="form-control" required placeholder="请输入用户名">
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">密码</label>
+                    <input type="password" id="login-password" name="password"
+                           class="form-control" required placeholder="请输入密码">
+                </div>
+
+                <div class="form-group">
+                    <label for="login-captcha">验证码</label>
+                    <div class="captcha-container">
+                        <input type="text" id="login-captcha" name="captcha"
+                               class="form-control" required maxlength="4" placeholder="输入验证码">
+                        <img th:src="@{/captcha}" alt="验证码"
+                             class="captcha-img"
+                             onclick="this.src = (window.location.pathname.split('/login')[0] || '') + '/captcha?t=' + new Date().getTime()">
+                    </div>
+                    <div class="captcha-help">点击图片刷新验证码</div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn">登录</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 注册表单 -->
+        <div class="auth-box">
+            <h2>注册新用户</h2>
+            <form th:action="@{/register}" method="post">
+                <div class="form-group">
+                    <label for="register-username">用户名</label>
+                    <input type="text" id="register-username" name="username"
+                           class="form-control" required placeholder="请输入用户名">
+                </div>
+
+                <div class="form-group">
+                    <label for="register-password">密码</label>
+                    <input type="password" id="register-password" name="password"
+                           class="form-control" required placeholder="请输入密码">
+                </div>
+
+                <div class="form-group">
+                    <label for="register-age">年龄</label>
+                    <input type="number" id="register-age" name="age"
+                           class="form-control" required min="1" max="120"
+                           placeholder="请输入年龄">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-secondary">注册</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 简单的表单验证
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const inputs = this.querySelectorAll('input[required]');
+                for (let input of inputs) {
+                    if (!input.value.trim()) {
+                        e.preventDefault();
+                        input.focus();
+                        input.style.borderColor = '#e74c3c';
+                        return false;
+                    }
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

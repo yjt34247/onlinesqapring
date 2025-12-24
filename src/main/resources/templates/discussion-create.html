@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建话题 - 在线问答平台</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>在线问答平台</h1>
+        <div class="user-info">
+            <span>欢迎, <strong th:text="${session.user.username}">用户</strong></span>
+            <a th:href="@{/discussions}">返回列表</a>
+            <a th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+
+    <div class="form-container">
+        <h2>创建新话题</h2>
+
+        <form th:action="@{/discussions/create}" method="post">
+            <div class="form-group">
+                <label for="title">话题标题</label>
+                <input type="text" id="title" name="title"
+                       class="form-control" required
+                       placeholder="请输入话题标题" maxlength="100">
+            </div>
+
+            <div class="form-group">
+                <label for="content">话题内容</label>
+                <textarea id="content" name="content"
+                          class="form-control" required
+                          placeholder="请输入话题内容，支持多行文本..."></textarea>
+            </div>
+
+            <div class="form-actions" style="display: flex; gap: 10px;">
+                <button type="submit" class="btn">创建话题</button>
+                <a th:href="@{/discussions}" class="btn btn-secondary" style="text-align: center;">
+                    取消
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 自动调整textarea高度
+    const textarea = document.getElementById('content');
+    if (textarea) {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // 触发一次以设置初始高度
+        textarea.dispatchEvent(new Event('input'));
+    }
+</script>
+</body>
+</html>

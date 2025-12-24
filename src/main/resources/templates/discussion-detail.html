@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${thread.title} + ' - 在线问答平台'">话题详情</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>在线问答平台</h1>
+        <div class="user-info">
+            <span>欢迎, <strong th:text="${session.user.username}">用户</strong></span>
+            <a th:href="@{/discussions}">返回列表</a>
+            <a th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+
+    <!-- 主话题 -->
+    <div class="thread-detail">
+        <div class="thread-header">
+            <h2 th:text="${thread.title}">话题标题</h2>
+            <div class="thread-meta">
+                    <span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        [[${thread.author}]]
+                    </span>
+                <span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <span th:text="${#dates.format(thread.createTime, 'yyyy-MM-dd HH:mm:ss')}">
+                            时间
+                        </span>
+                    </span>
+            </div>
+        </div>
+
+        <div class="thread-content" th:text="${thread.content}">
+            话题内容...
+        </div>
+    </div>
+
+    <!-- 回复区域 -->
+    <div class="replies-section">
+        <h3 style="margin-bottom: 20px; color: #2c3e50;">
+            回复 (<span th:text="${thread.replies != null ? thread.replies.size() : 0}">0</span>)
+        </h3>
+
+        <!-- 回复列表 -->
+        <div th:if="${thread.replies != null and !thread.replies.isEmpty()}">
+            <div th:each="reply : ${thread.replies}" class="reply-card">
+                <div class="reply-header">
+                    <span class="reply-author" th:text="${reply.author}">回复作者</span>
+                    <span class="reply-time"
+                          th:text="${#dates.format(reply.replyTime, 'yyyy-MM-dd HH:mm:ss')}">
+                            回复时间
+                        </span>
+                </div>
+                <div class="reply-content" th:text="${reply.content}">
+                    回复内容...
+                </div>
+            </div>
+        </div>
+
+        <!-- 空回复 -->
+        <div th:if="${thread.replies == null or thread.replies.isEmpty()}" class="empty-state" style="padding: 30px;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <h3>暂无回复</h3>
+            <p>还没有人回复，快来发表第一个回复吧！</p>
+        </div>
+
+        <!-- 回复表单 -->
+        <div class="card" style="margin-top: 30px;">
+            <h3 style="margin-bottom: 20px; color: #2c3e50;">发表回复</h3>
+            <form th:action="@{/discussions/{id}/reply(id=${thread.id})}" method="post">
+                <div class="form-group">
+                        <textarea name="content" class="form-control"
+                                  rows="5" required
+                                  placeholder="请输入回复内容，支持多行文本..."></textarea>
+                </div>
+                <div class="form-actions" style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn">提交回复</button>
+                    <a th:href="@{/discussions}" class="btn btn-secondary" style="text-align: center;">
+                        返回列表
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 自动刷新页面查看新回复
+    setInterval(function() {
+        fetch(window.location.href)
+            .then(response => response.text())
+            .then(html => {
+                console.log('页面自动刷新...');
+            })
+            .catch(err => console.log('刷新失败:', err));
+    }, 20000);
+
+    // 自动调整回复框高度
+    const replyTextarea = document.querySelector('textarea[name="content"]');
+    if (replyTextarea) {
+        replyTextarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    }
+</script>
+</body>
+</html>
